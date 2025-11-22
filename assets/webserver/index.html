@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="index.js"></script>
+    <title>Http File Transfer</title>
+</head>
+
+<body>
+
+    <div class="row">
+        <img src="icon.svg" alt="Http File Transfer" class="icon">
+        <p class="title">Sync: Http File Transfer</p>
+    </div>
+
+    <p class="description">Drag & Drop files on this window or use the “Upload Files” button to upload new files.</p>
+
+    <div class="drag-drop-area" id="dragDropArea">
+        <p>📁 Drag and drop your files here \nor</p>
+    </div>
+
+    <div class="upload-container">
+        <input class="hidden-file-input" id="file" type="file" name="file" accept="audio/*,video/*" />
+        <button class="upload-button" id="uploadButton" type="button">
+            Upload File
+        </button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="icon-header"></th>
+                <th class="title-header">{{platform}}</th>
+            </tr>
+        </thead>
+        <tbody id="fileTableBody">
+        </tbody>
+    </table>
+
+
+    <progress id="progress" value="0" max="100" style="width:100%"></progress>
+
+    <!-- Circular Progress Overlay -->
+    <div class="progress-overlay" id="progressOverlay">
+        <div class="circular-progress">
+            <svg class="progress-circle" viewBox="0 0 120 120">
+                <circle class="progress-circle-bg" cx="60" cy="60" r="50"></circle>
+                <circle class="progress-circle-fg" cx="60" cy="60" r="50" id="progressCircle"></circle>
+            </svg>
+            <div class="progress-text" id="progressText">0%</div>
+            <div class="progress-label" id="progressLabel">Loading</div>
+        </div>
+    </div>
+
+    <!-- Modal Dialog -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+            </div>
+            <p class="modal-message" id="modalMessage"></p>
+            <div class="modal-divider"></div>
+            <div class="modal-actions" id="modalActions">
+                <button class="modal-button" id="modalCancel"></button>
+                <button class="modal-button" id="modalConfirm"></button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
