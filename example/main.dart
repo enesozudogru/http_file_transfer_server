@@ -45,11 +45,11 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
   }
 
   Future<void> _initializeFileList() async {
-    // Çıkış dizinini al (geçici dizin kullan)
+    // Get output directory (use temp directory)
     final tempDir = Directory.systemTemp;
     final outputDir = Directory('${tempDir.path}/media_files');
 
-    // Geçici server instance oluştur sadece dosya taraması için
+    // Create temporary server instance for file scanning only
     final tempServer = HttpTransferServer(
       port: 8080,
       outputDirectory: outputDir,
@@ -57,15 +57,15 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
       deviceName: 'Flutter Device',
     );
 
-    // Mevcut dosyaları tara
+    // Scan existing files
     await tempServer.scanDirectory();
 
-    // BLoC'a mevcut dosyaları aktar
+    // Transfer existing files to BLoC
     if (mounted) {
       context.read<ProcessCubit>().setFiles(tempServer.files);
     }
 
-    // Geçici server'ı temizle
+    // Clean up temporary server
     tempServer.dispose();
   }
 
@@ -77,11 +77,11 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
 
   Future<void> _startServer() async {
     try {
-      // Çıkış dizinini al (geçici dizin kullan)
+      // Get output directory (use temp directory)
       final tempDir = Directory.systemTemp;
       final outputDir = Directory('${tempDir.path}/media_files');
 
-      // Sunucuyu oluştur
+      // Create server
       _server = HttpTransferServer(
         port: 8080,
         outputDirectory: outputDir,
@@ -89,18 +89,18 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
         deviceName: 'Flutter Device',
       );
 
-      // Mevcut dosya listesini sunucuya aktar
+      // Transfer current file list to server
       final currentFiles = context.read<ProcessCubit>().state;
       _server!.processCubit.setFiles(currentFiles);
 
-      // Sunucu ProcessCubit'ini ana ProcessCubit ile senkronize et
+      // Synchronize server ProcessCubit with main ProcessCubit
       _server!.processCubit.stream.listen((serverFiles) {
         if (mounted) {
           context.read<ProcessCubit>().setFiles(serverFiles);
         }
       });
 
-      // Sunucuyu başlat
+      // Start server
       await _server!.start();
 
       // Yerel IP'yi al
@@ -112,20 +112,20 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
           _serverUrl = ip != null ? 'http://$ip:8080' : 'http://localhost:8080';
         });
       }
-      debugPrint('Sunucu başlatıldı: $_serverUrl');
+      debugPrint('Server started: $_serverUrl');
     } catch (e) {
-      debugPrint('Sunucu başlatılamadı: $e');
+      debugPrint('Server failed to start: $e');
     }
   }
 
   Future<void> _stopServer() async {
     if (_server != null) {
-      // Sunucu durdurulmadan önce dosya listesini sakla
+      // Save file list before stopping server
       final currentFiles = _server!.files;
 
       await _server!.stop();
 
-      // ProcessCubit'i güncelle
+      // Update ProcessCubit
       if (mounted) {
         context.read<ProcessCubit>().setFiles(currentFiles);
         setState(() {
@@ -133,7 +133,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
           _serverUrl = null;
         });
       }
-      debugPrint('Sunucu durduruldu');
+      debugPrint('Server stopped');
     }
   }
 
@@ -142,7 +142,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
       await _server!.stop();
       _isRunning = false;
       _serverUrl = null;
-      debugPrint('Sunucu sessizce durduruldu');
+      debugPrint('Server silently stopped');
     }
   }
 
@@ -165,7 +165,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sunucu Durumu',
+                      'Server Status',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
@@ -178,7 +178,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          _isRunning ? 'Çalışıyor' : 'Durduruldu',
+                          _isRunning ? 'Running' : 'Stopped',
                           style: TextStyle(
                             color: _isRunning ? Colors.green : Colors.grey,
                             fontWeight: FontWeight.w500,
@@ -205,7 +205,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
               ElevatedButton.icon(
                 onPressed: _startServer,
                 icon: const Icon(Icons.play_arrow),
-                label: const Text('Sunucuyu Başlat'),
+                label: const Text('Start Server'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -216,7 +216,7 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
               ElevatedButton.icon(
                 onPressed: _stopServer,
                 icon: const Icon(Icons.stop),
-                label: const Text('Sunucuyu Durdur'),
+                label: const Text('Stop Server'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
@@ -231,14 +231,14 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dosyalar',
+                      'Files',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 8),
                     BlocBuilder<ProcessCubit, List<FileItem>>(
                       builder: (context, files) {
                         if (files.isEmpty) {
-                          return const Text('Henüz dosya yok');
+                          return const Text('No files yet');
                         }
                         return Column(
                           children: files

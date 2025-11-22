@@ -1,76 +1,69 @@
 # HTTP File Transfer Server
 
-Basit ve temiz bir HTTP dosya transfer sunucusu Flutter paketi. Delegate pattern karmaşası olmadan, doğrudan kullanılabilir.
+A simple and clean HTTP file transfer server Flutter package. Directly usable without delegate pattern complexity.
 
-## Özellikler
+## Features
 
-- ✅ Basit ve temiz API
-- ✅ Dosya yükleme ve indirme
-- ✅ Web arayüzü dahil
-- ✅ Video ve ses dosyası desteği
-- ✅ Otomatik cihaz ismini algılama
-- ✅ Çeviriler desteği
-- ✅ Delegate pattern yok - karışık kod yok
+- ✅ Simple and clean API
+- ✅ File upload and download
+- ✅ Web interface included
+- ✅ Video and audio file support
+- ✅ Automatic device name detection
+- ✅ No delegate pattern - no complex code
 
-## Kurulum
+## Installation
 
-`pubspec.yaml` dosyasına ekleyin:
+Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
   http_file_transfer_server: ^0.0.1
 ```
 
-## Temel Kullanım
+## Basic Usage
 
 ```dart
 import 'dart:io';
 import 'package:http_file_transfer_server/http_file_transfer_server.dart';
 
-// Sunucu oluştur
+// Create server
 final outputDir = Directory('/path/to/files');
 final server = HttpTransferServer(
   port: 8080,
   outputDirectory: outputDir,
   maxFileSizeMb: 100.0,
   deviceName: 'My Device',
-  translations: {
-    'description': 'Dosyalarınızı aktarın',
-    'upload_music': 'Müzik Yükle',
-    'dragAndDropDescription': 'Dosyaları sürükleyip bırakın',
-    'uploading': 'Yükleniyor...',
-  },
 );
 
-// Sunucuyu başlat
+// Start server
 await server.start();
 
-// Yerel IP'yi al
+// Get local IP
 final ip = await server.getLocalIp();
-print('Sunucu çalışıyor: http://$ip:8080');
+print('Server running: http://$ip:8080');
 
-// Sunucuyu durdur
+// Stop server
 await server.stop();
 ```
 
 ## API Endpoints
 
-- `GET /` - Web arayüzü
-- `GET /list` - Dosya listesi (JSON)
-- `POST /upload` - Dosya yükle (multipart/form-data)
-- `GET /download?path=xxx` - Dosya indir
-- `GET /remove?path=xxx` - Dosya sil
+- `GET /` - Web interface
+- `GET /list` - File list (JSON)
+- `POST /upload` - Upload file (multipart/form-data)
+- `GET /download?path=xxx` - Download file
+- `GET /remove?path=xxx` - Delete file
 
-## Dosya İşlemleri
+## File Operations
 
 ```dart
-// Dizini tara ve dosyaları yükle
+// Scan directory and load files
 await server.scanDirectory();
 
-// Dosya listesini al
+// Get file list
 final files = server.files;
 
-// Dosya ekle
+// Add file
 server.addFile(FileItem(
   path: '/path/to/file.mp3',
   title: 'My Song',
@@ -78,41 +71,30 @@ server.addFile(FileItem(
   type: 'audio',
 ));
 
-// Dosya kaldır
+// Remove file
 server.removeFile('/path/to/file.mp3');
 ```
 
-## Desteklenen Dosya Türleri
+## Supported File Types
 
-### Ses Dosyaları
+### Audio Files
 - MP3, WAV, FLAC, AAC, OGG, M4A, WMA
 
-### Video Dosyaları  
+### Video Files  
 - MP4, AVI, MOV, MKV, FLV, WMV, WEBM
 
-## Web Arayüzü
+## Web Interface
 
-Sunucu otomatik olarak bir web arayüzü sunar. Tarayıcıdan `http://ip:port` adresine giderek:
+The server automatically provides a web interface. By going to `http://ip:port` in your browser:
 
-- Dosyaları görüntüleyebilirsiniz
-- Sürükle-bırak ile dosya yükleyebilirsiniz  
-- Dosyaları indirebilirsiniz
-- Dosyaları silebilirsiniz
+- You can view files
+- Upload files with drag and drop
+- Download files
+- Delete files
 
-## Özelleştirme
+## Customization
 
-### Çeviriler
-
-```dart
-final translations = {
-  'description': 'Transfer your files easily',
-  'upload_music': 'Upload Music', 
-  'dragAndDropDescription': 'Drag and drop files here',
-  'uploading': 'Uploading...',
-};
-```
-
-### Maksimum Dosya Boyutu
+### Maximum File Size
 
 ```dart
 final server = HttpTransferServer(
@@ -121,6 +103,6 @@ final server = HttpTransferServer(
 );
 ```
 
-## Tam Örnek
+## Full Example
 
-Detaylı kullanım örneği için `example/main.dart` dosyasına bakın.
+See `example/main.dart` for detailed usage example.

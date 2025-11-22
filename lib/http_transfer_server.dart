@@ -12,14 +12,14 @@ import 'package:path/path.dart' as path;
 import 'cubit/process_cubit.dart';
 
 // ===================================================================
-// BASIT DOSYA MODELI
+// SIMPLE FILE MODEL
 // ===================================================================
 
 class FileItem {
   final String path;
   final String title;
   final int size;
-  final String type; // 'audio' veya 'video'
+  final String type; // 'audio' or 'video'
 
   FileItem({
     required this.path,
@@ -39,7 +39,7 @@ class FileItem {
 }
 
 // ===================================================================
-// ANA SUNUCU SINIFI
+// MAIN SERVER CLASS
 // ===================================================================
 
 class HttpTransferServer {
