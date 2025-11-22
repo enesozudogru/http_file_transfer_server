@@ -165,12 +165,14 @@ class HttpTransferServer {
   // Helper methods
   bool _isVideoFile(String filePath) {
     final extension = path.extension(filePath).toLowerCase();
-    return ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm'].contains(extension);
+    return ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm']
+        .contains(extension);
   }
 
   bool _isAudioFile(String filePath) {
     final extension = path.extension(filePath).toLowerCase();
-    return ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.m4a', '.wma'].contains(extension);
+    return ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.m4a', '.wma']
+        .contains(extension);
   }
 
   bool _isMediaFile(String filePath) {
@@ -212,7 +214,8 @@ class HttpTransferServer {
     try {
       final contentType = request.headers.contentType;
       if (contentType == null || contentType.parameters['boundary'] == null) {
-        throw Exception("Missing boundary in content type for multipart request");
+        throw Exception(
+            "Missing boundary in content type for multipart request");
       }
 
       final boundary = contentType.parameters['boundary'];
@@ -222,7 +225,8 @@ class HttpTransferServer {
       for (final part in parts) {
         final contentDisposition = part.headers['content-disposition'] ?? '';
         if (contentDisposition.contains('filename=')) {
-          final filenameMatch = RegExp(r'filename="([^"]*)"').firstMatch(contentDisposition);
+          final filenameMatch =
+              RegExp(r'filename="([^"]*)"').firstMatch(contentDisposition);
           final filename = filenameMatch?.group(1);
 
           if (filename != null && _isMediaFile(filename)) {
@@ -276,7 +280,8 @@ class HttpTransferServer {
     final filename = path.basename(file.path); // path/path_lib kullanılır
     final encodedFileName = Uri.encodeComponent(filename);
 
-    request.response.headers.add('Content-Disposition', 'attachment; filename*=UTF-8\'\'$encodedFileName');
+    request.response.headers.add('Content-Disposition',
+        'attachment; filename*=UTF-8\'\'$encodedFileName');
 
     await file.openRead().pipe(request.response);
   }
@@ -317,18 +322,20 @@ class HttpTransferServer {
 
   Future<void> _indexRequest(HttpRequest request, String requestPath) async {
     final name = path.basename(requestPath);
-    final assetPath = 'packages/http_file_transfer_server/assets/webserver/${requestPath.isEmpty ? 'index.html' : requestPath}';
+    final assetPath =
+        'packages/http_file_transfer_server/assets/webserver/${requestPath.isEmpty ? 'index.html' : requestPath}';
     final mime = lookupMimeType(name) ?? 'text/html';
 
     try {
       // Check if this is a binary file (image, etc.)
-      final isBinary = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'svg'].contains(path.extension(name).toLowerCase().replaceFirst('.', ''));
-      
+      final isBinary = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'svg']
+          .contains(path.extension(name).toLowerCase().replaceFirst('.', ''));
+
       if (isBinary) {
         // Load binary files using rootBundle.load()
         final byteData = await rootBundle.load(assetPath);
         final bytes = byteData.buffer.asUint8List();
-        
+
         request.response.headers.add('Content-Type', mime);
         request.response.add(bytes);
       } else {
@@ -336,7 +343,7 @@ class HttpTransferServer {
         final content = await rootBundle.loadString(assetPath);
         final platform = await getDeviceName();
         final replacedContent = content.replaceAll('{{platform}}', platform);
-        
+
         request.response.headers.add('Content-Type', '$mime; charset=utf-8');
         request.response.write(replacedContent);
       }

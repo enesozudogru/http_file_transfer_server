@@ -244,10 +244,13 @@ class _FileTransferServerPageState extends State<FileTransferServerPage> {
                           children: files
                               .map((file) => ListTile(
                                     leading: Icon(
-                                      file.type == 'video' ? Icons.video_file : Icons.audio_file,
+                                      file.type == 'video'
+                                          ? Icons.video_file
+                                          : Icons.audio_file,
                                     ),
                                     title: Text(file.title),
-                                    subtitle: Text('${(file.size / 1024 / 1024).toStringAsFixed(2)} MB'),
+                                    subtitle: Text(
+                                        '${(file.size / 1024 / 1024).toStringAsFixed(2)} MB'),
                                     dense: true,
                                   ))
                               .toList(),
