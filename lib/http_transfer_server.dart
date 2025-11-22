@@ -321,14 +321,25 @@ class HttpTransferServer {
     final mime = lookupMimeType(name) ?? 'text/html';
 
     try {
-      // Load static files from assets
-      final content = await rootBundle.loadString(assetPath);
-      final platform = await getDeviceName();
-
-      final replacedContent = content.replaceAll('{{platform}}', platform);
-
-      request.response.headers.add('Content-Type', '$mime; charset=utf-8');
-      request.response.write(replacedContent);
+      // Check if this is a binary file (image, etc.)
+      final isBinary = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'svg'].contains(path.extension(name).toLowerCase().replaceFirst('.', ''));
+      
+      if (isBinary) {
+        // Load binary files using rootBundle.load()
+        final byteData = await rootBundle.load(assetPath);
+        final bytes = byteData.buffer.asUint8List();
+        
+        request.response.headers.add('Content-Type', mime);
+        request.response.add(bytes);
+      } else {
+        // Load text files using rootBundle.loadString()
+        final content = await rootBundle.loadString(assetPath);
+        final platform = await getDeviceName();
+        final replacedContent = content.replaceAll('{{platform}}', platform);
+        
+        request.response.headers.add('Content-Type', '$mime; charset=utf-8');
+        request.response.write(replacedContent);
+      }
     } catch (e) {
       request.response.statusCode = HttpStatus.notFound;
       request.response.write('File not found: $assetPath');
