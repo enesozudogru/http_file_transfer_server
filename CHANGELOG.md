@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- File size validation in upload endpoint with detailed error responses
+- JSON error responses for better API error handling
+- Support for maximum file size limits enforcement (`maxFileSizeMb` parameter)
+
+### Changed
+- Enhanced `_requestUpload()` method to validate file size before saving to disk
+- Improved error reporting with structured JSON responses containing:
+  - Error message
+  - Maximum allowed file size
+  - Actual file size
+  - Filename
+
+### Fixed
+- Prevent oversized files from being uploaded and stored on disk
+- Resource optimization by validating files before processing
+
 ## [0.0.2] - 2024-11-29
 
 ### Changed
@@ -72,5 +89,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON API responses
 - File system integration with automatic directory creation
 
-[Unreleased]: https://github.com/enesozudogru/http_file_transfer_server/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/enesozudogru/http_file_transfer_server/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/enesozudogru/http_file_transfer_server/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/enesozudogru/http_file_transfer_server/releases/tag/v0.0.1
