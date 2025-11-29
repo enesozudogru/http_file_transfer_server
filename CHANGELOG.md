@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2024-11-29
+
+### Changed
+- Updated dependencies to latest versions for improved Flutter compatibility:
+  - `device_info_plus`: ^11.3.0 → ^12.3.0 (improved device detection)
+  - `mime`: ^1.0.6 → ^2.0.0 (enhanced MIME type support)
+  - `path`: ^1.9.0 → ^1.9.1 (bug fixes and improvements)
+  - `flutter_bloc`: ^8.0.1 → ^9.1.1 (latest BLoC pattern improvements)
+- Enhanced compatibility with latest Flutter versions
+- Improved performance and stability
+
 ## [0.0.1] - 2024-11-22
 
 ### Added
