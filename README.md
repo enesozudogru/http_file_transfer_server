@@ -17,7 +17,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  http_file_transfer_server: ^0.0.1
+  http_file_transfer_server: ^0.0.2
 ```
 
 ## Basic Usage
