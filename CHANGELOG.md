@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.3] - 2026-01-02
 
 ### Added
 - File size validation in upload endpoint with detailed error responses
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent oversized files from being uploaded and stored on disk
 - Resource optimization by validating files before processing
 
-## [0.0.2] - 2024-11-29
+## [0.0.2] - 2025-11-29
 
 ### Changed
 - Updated dependencies to latest versions for improved Flutter compatibility:
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced compatibility with latest Flutter versions
 - Improved performance and stability
 
-## [0.0.1] - 2024-11-22
+## [0.0.1] - 2025-11-22
 
 ### Added
 - Initial release of HTTP File Transfer Server package
