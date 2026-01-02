@@ -165,14 +165,12 @@ class HttpTransferServer {
   // Helper methods
   bool _isVideoFile(String filePath) {
     final extension = path.extension(filePath).toLowerCase();
-    return ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm']
-        .contains(extension);
+    return ['.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm'].contains(extension);
   }
 
   bool _isAudioFile(String filePath) {
     final extension = path.extension(filePath).toLowerCase();
-    return ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.m4a', '.wma']
-        .contains(extension);
+    return ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.m4a', '.wma'].contains(extension);
   }
 
   bool _isMediaFile(String filePath) {
@@ -214,8 +212,7 @@ class HttpTransferServer {
     try {
       final contentType = request.headers.contentType;
       if (contentType == null || contentType.parameters['boundary'] == null) {
-        throw Exception(
-            "Missing boundary in content type for multipart request");
+        throw Exception("Missing boundary in content type for multipart request");
       }
 
       final boundary = contentType.parameters['boundary'];
@@ -225,17 +222,32 @@ class HttpTransferServer {
       for (final part in parts) {
         final contentDisposition = part.headers['content-disposition'] ?? '';
         if (contentDisposition.contains('filename=')) {
-          final filenameMatch =
-              RegExp(r'filename="([^"]*)"').firstMatch(contentDisposition);
+          final filenameMatch = RegExp(r'filename="([^"]*)"').firstMatch(contentDisposition);
           final filename = filenameMatch?.group(1);
 
           if (filename != null && _isMediaFile(filename)) {
-            final file = File(path.join(outputDirectory.path, filename));
-            final sink = file.openWrite();
-            await part.pipe(sink);
-            await sink.close();
+            final fileBytes = <int>[];
+            await part.forEach((data) {
+              fileBytes.addAll(data);
+            });
 
-            // Add file to our internal list
+            /// MARK: We're using the maxFileSizeMb to limit the file size
+            final fileSizeInMb = fileBytes.length / (1024 * 1024);
+            if (fileSizeInMb > maxFileSizeMb) {
+              request.response.statusCode = HttpStatus.badRequest;
+              request.response.headers.contentType = ContentType.json;
+              request.response.write(jsonEncode({
+                'error': 'File size exceeds maximum limit',
+                'maxSize': maxFileSizeMb,
+                'fileSize': double.parse(fileSizeInMb.toStringAsFixed(2)),
+                'filename': filename,
+              }));
+              return;
+            }
+
+            final file = File(path.join(outputDirectory.path, filename));
+            await file.writeAsBytes(fileBytes);
+
             final fileStats = await file.stat();
             final fileItem = FileItem(
               path: file.path,
@@ -280,8 +292,7 @@ class HttpTransferServer {
     final filename = path.basename(file.path); // path/path_lib kullanılır
     final encodedFileName = Uri.encodeComponent(filename);
 
-    request.response.headers.add('Content-Disposition',
-        'attachment; filename*=UTF-8\'\'$encodedFileName');
+    request.response.headers.add('Content-Disposition', 'attachment; filename*=UTF-8\'\'$encodedFileName');
 
     await file.openRead().pipe(request.response);
   }
@@ -322,14 +333,12 @@ class HttpTransferServer {
 
   Future<void> _indexRequest(HttpRequest request, String requestPath) async {
     final name = path.basename(requestPath);
-    final assetPath =
-        'packages/http_file_transfer_server/assets/webserver/${requestPath.isEmpty ? 'index.html' : requestPath}';
+    final assetPath = 'packages/http_file_transfer_server/assets/webserver/${requestPath.isEmpty ? 'index.html' : requestPath}';
     final mime = lookupMimeType(name) ?? 'text/html';
 
     try {
       // Check if this is a binary file (image, etc.)
-      final isBinary = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'svg']
-          .contains(path.extension(name).toLowerCase().replaceFirst('.', ''));
+      final isBinary = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'svg'].contains(path.extension(name).toLowerCase().replaceFirst('.', ''));
 
       if (isBinary) {
         // Load binary files using rootBundle.load()
